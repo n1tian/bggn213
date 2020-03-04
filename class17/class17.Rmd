@@ -1,0 +1,79 @@
+---
+title: "class17.Rmd"
+author: "Nuo Tian"
+date: "3/4/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+url <- "https://tinyurl.com/COVID-2019"
+virus <- read.csv(url)
+
+tail(virus)
+```
+
+Q1. How many total infected cases are there around the world?
+
+```{r}
+total_cases <- sum(virus$cases)
+total_cases
+```
+
+Q2. How many deaths linked to infected cases have there been?
+
+```{r}
+inds <- virus$type == "death"
+death_cases <- sum(virus[inds, "cases"])
+death_cases
+```
+
+Q3. What is the overall death rate?
+```{r}
+round(death_cases/total_cases*100, 2)
+```
+
+Q4. What is the death rate in "Mainland China"?
+
+```{r}
+inds2 <- virus$Country.Region == "Mainland China"
+total_cases_MC <- sum(virus[inds2, "cases"])
+inds3 <- virus$Country.Region == "Mainland China" & virus$type == "death"
+death_cases_MC <- sum(virus[inds3, "cases"])
+round(death_cases_MC/total_cases_MC*100, 2)
+```
+
+Q5. What is the death rate in Italy, Iran and the US?
+
+#death rate in Italy
+```{r}
+inds4 <- virus$Country.Region == "Italy"
+total_cases_It <- sum(virus[inds4, "cases"])
+inds5 <- virus$Country.Region == "Italy" & virus$type == "death"
+death_cases_It <- sum(virus[inds5, "cases"])
+round(death_cases_It/total_cases_It*100, 2)
+```
+
+#death rate in Iran
+```{r}
+inds6 <- virus$Country.Region == "Iran"
+total_cases_Ir <- sum(virus[inds6, "cases"])
+inds7 <- virus$Country.Region == "Iran" & virus$type == "death"
+death_cases_Ir <- sum(virus[inds7, "cases"])
+round(death_cases_Ir/total_cases_Ir*100, 2)
+```
+
+#death rate in the US
+```{r}
+inds8 <- virus$Country.Region == "US"
+virus[inds8,]
+total_cases_US <- sum(virus[inds8, "cases"])
+inds9 <- virus$Country.Region == "US" & virus$type == "death"
+virus[inds9,]
+death_cases_US <- sum(virus[inds9, "cases"])
+round(death_cases_US/total_cases_US*100, 2)
+```
