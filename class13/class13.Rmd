@@ -1,0 +1,49 @@
+---
+title: "Structure based drug design"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Download and process starting structure
+
+Here we download and clean up the HIV-Pr structure (PDB code: 1HSG) from the main PDB database. We will make a separate set of "protein-only" and "ligand only" PDB files.
+
+```{r}
+library(bio3d)
+file.name <- get.pdb("1hsg")
+```
+
+We'll use `read.pdb()`, `atom.selet()` and `write.pdb()` functions to make our separate "protein-only" and "ligand-only" PDB files
+
+```{r}
+hiv <- read.pdb(file.name)
+hiv
+```
+
+```{r}
+prot <- atom.select(hiv, "protein", value=TRUE)
+write.pdb(prot, file="1hsg_protein.pdb")
+```
+
+```{r}
+lig <- atom.select(hiv, "ligand", value=TRUE)
+lig
+write.pdb(lig, file="1hsg_ligand.pdb")
+```
+
+```{r}
+res <- read.pdb("all.pdbqt", multi=TRUE)
+write.pdb(res, "results.pdb")
+```
+
+
+##Read docking results
+```{r}
+res <- read.pdb("all.pdbqt", multi=TRUE)
+ori <- read.pdb("1hsg_ligand.pdbqt")
+rmsd(ori, res)
+```
+
