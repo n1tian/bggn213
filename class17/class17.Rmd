@@ -70,10 +70,8 @@ round(death_cases_Ir/total_cases_Ir*100, 2)
 #death rate in the US
 ```{r}
 inds8 <- virus$Country.Region == "US"
-virus[inds8,]
 total_cases_US <- sum(virus[inds8, "cases"])
 inds9 <- virus$Country.Region == "US" & virus$type == "death"
-virus[inds9,]
 death_cases_US <- sum(virus[inds9, "cases"])
 round(death_cases_US/total_cases_US*100, 2)
 ```

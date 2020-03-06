@@ -1,0 +1,169 @@
+---
+title: "Class 16: Pathway Analysis from RNA-Seq Results"
+author: "Nuo Tian"
+date: "2/28/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Download and read input data
+
+The data for for hands-on session comes from GEO entry: GSE37704, which is associated with the following publication:
+
+Trapnell C, Hendrickson DG, Sauvageau M, Goff L et al. "Differential analysis of gene regulation at transcript resolution with RNA-seq". Nat Biotechnol 2013 Jan;31(1):46-53. PMID: 23222703
+The authors report on differential analysis of lung fibroblasts in response to loss of the developmental transcription factor HOXA1.
+
+```{r}
+# Import metadata and take a peak
+colData = read.csv("GSE37704_metadata.csv", row.names=1)
+head(colData)
+```
+
+```{r}
+# Import metadata and take a peak
+countData = read.csv("GSE37704_featurecounts.csv", row.names=1)
+head(countData)
+```
+
+```{r}
+# Note we need to remove the odd first $length col
+countData2 <- countData[,-1]
+head(countData2)
+```
+
+```{r}
+dim(countData2)
+```
+
+There are genes that have zero counts in all samples (i.e. columns). We should remove these.
+
+Fitst to identify the zero sum rows
+
+```{r}
+countData2 <- countData2[rowSums(countData2) != 0,]
+countData2
+```
+
+```{r}
+dim(countData2)
+```
+
+## Running DESeq2
+
+```{r}
+library(DESeq2)
+```
+
+```{r}
+dds = DESeqDataSetFromMatrix(countData=countData2,
+                             colData=colData,
+                             design=~condition)
+dds = DESeq(dds)
+```
+
+```{r}
+res <- results(dds)
+head(res)
+```
+
+```{r}
+mycols <- rep("gray", nrow(res))
+mycols[ abs(res$log2FoldChange) > 2 ] <- "blue"
+plot(res$log2FoldChange, -log(res$padj), xlab="Log2(FoldChange)", ylab="-Log(P-value)", col=mycols)
+```
+
+```{r}
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+
+columns(org.Hs.eg.db)
+```
+
+
+Let's map our ENSEMBLE gene ids to the more conventional gene SYMBOL
+
+```{r}
+res$symbol <- mapIds(org.Hs.eg.db,
+              keys = row.names(res), 
+              keytype="ENSEMBL",
+              column="SYMBOL",
+              multiVals="first")
+
+res$name <-   mapIds(org.Hs.eg.db,
+              keys=row.names(res),
+              keytype="ENSEMBL",
+              column="GENENAME",
+              multiVals="first")
+
+res$entrez <- mapIds(org.Hs.eg.db,
+              keys=row.names(res),
+              keytype="ENSEMBL",
+              column="ENTREZID",
+              multiVals="first")
+head(res)
+```
+
+Save our annotated results
+```{r}
+write.csv(res, file="desq_results.csv")
+```
+
+# Pathway Analysis
+
+Here we are going to use the gage package for pathway analysis. Once we have a list of enriched pathways, we're going to use the pathview package to draw pathway diagrams, shading the molecules in the pathway by their degree of up/down-regulation.
+
+```{r}
+library(pathview)
+```
+
+```{r}
+library(gage)
+library(gageData)
+data(kegg.sets.hs)
+data(sigmet.idx.hs)
+
+# Focus on signaling and metabolic pathways only
+kegg.sets.hs = kegg.sets.hs[sigmet.idx.hs]
+
+# Examine the first 3 pathways
+head(kegg.sets.hs, 3)
+```
+
+```{r}
+foldchanges = res$log2FoldChange
+names(foldchanges) = res$entrez
+head(foldchanges)
+```
+
+```{r}
+# Get the results
+keggres = gage(foldchanges, gsets=kegg.sets.hs)
+```
+
+```{r}
+attributes(keggres)
+```
+
+```{r}
+ head(keggres$less)
+```
+
+```{r}
+pathview(gene.data=foldchanges, pathway.id="hsa04110")
+
+```
+
+```{r}
+knitr::include_graphics("hsa04110.pathview.png")
+```
+
+Try for high resolution figure
+
+```{r}
+pathview(gene.data=foldchanges, pathway.id="hsa04110", kegg.native=FALSE)
+
+```
+
