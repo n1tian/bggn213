@@ -5,7 +5,7 @@ Structure based drug design
 
 Here we download and clean up the HIV-Pr structure (PDB code: 1HSG) from
 the main PDB database. We will make a separate set of “protein-only” and
-“ligand only” PDB files.
+“ligand only” PDB files
 
 ``` r
 library(bio3d)
