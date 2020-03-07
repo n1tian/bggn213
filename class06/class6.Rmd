@@ -1,0 +1,123 @@
+---
+title: "writing your own R functions"
+author: "Nuo Tian"
+date: "1/24/2020"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+plot(1:5, col = "blue", type = "o")
+```
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+```{r}
+read.table("test1.txt", header = TRUE, sep = ",")
+```
+
+```{r}
+read.table("test2.txt", header = TRUE, sep = "$")
+```
+
+```{r}
+read.table("test3.txt")
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+##our first function
+
+This is an example function names `add` with input `x` and `y`
+
+```{r}
+add <- function(x, y=1) {
+  #sum the input x and y
+  x+y
+}
+```
+lets try using it 
+```{r}
+add(1)
+```
+
+```{r}
+rescale <- function(x) {
+ rng <-range(x, na.rm=TRUE)
+ (x - rng[1]) / (rng[2] - rng[1])
+}
+```
+test:
+```{r}
+rescale(1:10)
+```
+
+```{r}
+rescale(c(1:10, NA))
+```
+
+```{r}
+rng <- rescale(c(1:10, NA))
+rng
+```
+
+```{r}
+rescale3 <- function(x, na.rm=TRUE, plot=FALSE) {
+ if(na.rm) {
+ rng <-range(x, na.rm=na.rm)
+ } else {
+ rng <-range(x)
+ }
+ print("Hello")
+ answer <- (x - rng[1]) / (rng[2] - rng[1])
+ print("is it me you are looking for?")
+ if(plot) {
+   print("Please don't sing again!")
+ plot(answer, typ="b", lwd=4)
+ }
+ print("I can see it in ...")
+}
+```
+
+test:
+```{r}
+rescale3(c(1:10), plot = TRUE)
+```
+
+# B. Improved analysis code (bio3d)
+```{r}
+library(bio3d) 
+plot <- function(accession, cha, ele) {
+  s <- read.pdb(accession)
+  s.chainX <- trim.pdb(s, chain = cha, elety = ele)
+  s.b <- s.chainX$atom$b
+  plotb3(s.b, sse=s.chainX, typ="l", ylab="Bfactor")
+}
+```
+
+test:
+```{r}
+plot("4AKE", "A", "CA")
+plot("1AKE", "A", "CA")
+plot("1E4Y", "A", "CA")
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
