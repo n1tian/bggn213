@@ -7,4 +7,3 @@ barplot(height = mouse$Count, horiz=TRUE, xlab = "Count", names.arg=mouse$Featur
 
 
 
-
