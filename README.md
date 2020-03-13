@@ -1,7 +1,7 @@
 # bggn213
 
 This is my classwork from [BGGN-213 Winter quarter 2020](https://bioboot.github.io/bggn213_W20/) at UC San Diego.
-- Class 05: R Graphics
+- Class 05: [R Graphics](https://github.com/n1tian/bggn213/tree/master/class05)
 - Class 06: [writing your own R functions](https://github.com/n1tian/bggn213/tree/master/class06)
 - Class 09: [Machine Learning](https://github.com/n1tian/bggn213/tree/master/class09)
 - Class 12: [Structural Biolinformatics (pt. 1)](https://github.com/n1tian/bggn213/tree/master/class12)
